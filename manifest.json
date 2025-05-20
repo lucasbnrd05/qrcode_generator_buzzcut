@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+  "name": "Générateur QR Code Avancé",
+  "version": "1.2",
+  "description": "Génère un QR code personnalisable pour l'URL de l'onglet actif et permet de le télécharger.",
+  "homepage_url": "https://github.com/lucasbnrd05/qrcode_generator_buzzcut",
+  "permissions": [
+    "downloads",
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+
+
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+  "browser_action": {
+    "default_icon": "icons/icon-48.png",
+    "default_title": "Générer QR Code",
+    "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "qrcodegenerator_buzzcut@lucasbnrd05.github.io",
+      "strict_min_version": "60.0"
+    }
+  }
+}
