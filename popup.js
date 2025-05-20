@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log("Tous les éléments DOM nécessaires sont trouvés.");
 
   let currentUrl = '';
-  // qrCodeInstance n'est pas crucial si on lit toujours le DOM pour le dataUrl
   const defaultSettings = { fgColor: '#000000', bgColor: '#ffffff', size: 180 };
   let userSettings = { ...defaultSettings };
 
@@ -137,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function () {
     saveSettings();
   });
 
-  // --- FONCTION DE TÉLÉCHARGEMENT CORRIGÉE ---
   downloadBtn.addEventListener('click', () => {
     console.log("Bouton Télécharger cliqué.");
 
@@ -176,7 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const filename = `qrcode-${hostname.replace(/\./g, '_')}.png`;
 
-    // Convertir dataUrl en Blob
     fetch(dataUrl)
       .then(res => {
         if (!res.ok) throw new Error(`Fetch (dataUrl) a échoué: ${res.status}`);
@@ -187,38 +184,32 @@ document.addEventListener('DOMContentLoaded', function () {
         const blobUrl = URL.createObjectURL(typedBlob);
         console.log(`Blob URL créé: ${blobUrl} (Type: ${typedBlob.type}, Taille: ${typedBlob.size} octets)`);
 
-        // Méthode principale : Téléchargement via un lien <a>
         try {
           console.log("Tentative de téléchargement via <a> (méthode principale)...");
           const link = document.createElement('a');
           link.href = blobUrl;
           link.download = filename;
-          document.body.appendChild(link); // Important pour Firefox dans certains cas
+          document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           console.log("Lien <a> cliqué pour téléchargement. Vérifiez vos téléchargements.");
-          // Laisser du temps à l'utilisateur pour interagir avec la boîte "Enregistrer sous"
-          // avant de révoquer l'URL du blob.
           setTimeout(() => {
             URL.revokeObjectURL(blobUrl);
             console.log("Blob URL révoquée (après tentative via <a>).");
-          }, 15000); // 15 secondes
+          }, 15000); 
         } catch (linkError) {
-          // Si la méthode <a> échoue (ce qui est rare pour une exception JS ici),
-          // on tente d'ouvrir dans un nouvel onglet comme dernier recours.
           handleError(linkError, "Le téléchargement via <a> a échoué. Tentative d'ouverture dans un nouvel onglet.");
           browser.tabs.create({ url: blobUrl })
             .then(() => {
               console.log("Blob URL ouverte dans un nouvel onglet.");
-              // Laisser plus de temps car l'utilisateur peut garder l'onglet ouvert.
               setTimeout(() => {
                 URL.revokeObjectURL(blobUrl);
                 console.log("Blob URL révoquée (après ouverture onglet).");
-              }, 60000); // 1 minute
+              }, 60000); 
             })
             .catch(tabError => {
               handleError(tabError, "Échec de l'ouverture du Blob URL dans un nouvel onglet.");
-              URL.revokeObjectURL(blobUrl); // S'assurer de révoquer en cas d'échec ici aussi.
+              URL.revokeObjectURL(blobUrl);
             });
         }
       })
@@ -226,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
         handleError(fetchOrBlobError, "Erreur lors de la création du Blob à partir de dataUrl.");
       });
   });
-  // --- FIN DE LA FONCTION DE TÉLÉCHARGEMENT CORRIGÉE ---
 
   function handleError(error, contextMessage = 'Une erreur est survenue') {
     console.error(`[ERREUR] ${contextMessage}:`, error ? (error.message || error) : 'Détail inconnu.');
